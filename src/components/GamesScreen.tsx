@@ -1,31 +1,34 @@
 import React, { useState } from 'react';
 import {
-  ShieldAlert,
-  Target,
-  Grid,
   Clock,
   CheckCircle2,
   Play,
-  ArrowRight,
-  Sparkles,
+  ChevronLeft,
+  ChevronRight,
+  ShieldCheck,
 } from 'lucide-react';
 import { GameType, GameSession } from '../types';
 import { GoNoGoGame } from './games/GoNoGoGame';
 import { ReactionDotGame } from './games/ReactionDotGame';
 import { MemorySequenceGame } from './games/MemorySequenceGame';
+import { useTheme } from '../theme/ThemeContext';
 
 interface GamesScreenProps {
   recentGameSessions: GameSession[];
   onSaveGameSession: (session: GameSession) => void;
   onRequestFeedback: (source: 'game', metadata: string) => void;
+  onGameActiveChange?: (active: boolean) => void;
 }
 
 export const GamesScreen: React.FC<GamesScreenProps> = ({
   recentGameSessions,
   onSaveGameSession,
   onRequestFeedback,
+  onGameActiveChange,
 }) => {
+  const { colors, isDark } = useTheme();
   const [activeGame, setActiveGame] = useState<GameType | null>(null);
+  const [currentCardIndex, setCurrentCardIndex] = useState<number>(0);
 
   // Check completion status for today
   const isCompletedToday = (type: GameType) => {
@@ -36,235 +39,321 @@ export const GamesScreen: React.FC<GamesScreenProps> = ({
     isCompletedToday(t as GameType)
   ).length;
 
+  const handleStartGame = (type: GameType) => {
+    setActiveGame(type);
+    onGameActiveChange?.(true);
+  };
+
+  const handleBackFromGame = () => {
+    setActiveGame(null);
+    onGameActiveChange?.(false);
+  };
+
   const handleGameComplete = (session: GameSession) => {
     onSaveGameSession(session);
-    // Trigger product feedback modal
     onRequestFeedback('game', session.gameType);
   };
 
-  // If a game is active, render the dedicated game view
+  // Dedicated distraction-free game views
   if (activeGame === 'gonogo') {
     return (
-      <div className="pt-2 pb-20 animate-fadeIn">
-        <GoNoGoGame
-          onComplete={handleGameComplete}
-          onBack={() => setActiveGame(null)}
-        />
+      <div
+        className="fixed inset-0 z-50 p-4 flex flex-col justify-between animate-fadeIn max-w-md mx-auto theme-fade-transition"
+        style={{ backgroundColor: colors.container }}
+      >
+        <GoNoGoGame onComplete={handleGameComplete} onBack={handleBackFromGame} />
       </div>
     );
   }
 
   if (activeGame === 'reaction_dot') {
     return (
-      <div className="pt-2 pb-20 animate-fadeIn">
-        <ReactionDotGame
-          onComplete={handleGameComplete}
-          onBack={() => setActiveGame(null)}
-        />
+      <div
+        className="fixed inset-0 z-50 p-4 flex flex-col justify-between animate-fadeIn max-w-md mx-auto theme-fade-transition"
+        style={{ backgroundColor: colors.container }}
+      >
+        <ReactionDotGame onComplete={handleGameComplete} onBack={handleBackFromGame} />
       </div>
     );
   }
 
   if (activeGame === 'memory_sequence') {
     return (
-      <div className="pt-2 pb-20 animate-fadeIn">
-        <MemorySequenceGame
-          onComplete={handleGameComplete}
-          onBack={() => setActiveGame(null)}
-        />
+      <div
+        className="fixed inset-0 z-50 p-4 flex flex-col justify-between animate-fadeIn max-w-md mx-auto theme-fade-transition"
+        style={{ backgroundColor: colors.container }}
+      >
+        <MemorySequenceGame onComplete={handleGameComplete} onBack={handleBackFromGame} />
       </div>
     );
   }
 
-  return (
-    <div className="space-y-6 pb-20 animate-fadeIn">
-      {/* Editorial Title */}
-      <section className="pt-2">
-        <span className="text-[10px] uppercase font-bold tracking-widest text-[#2FE4A6] block mb-1">
-          COGNITIVE EXERCISES
-        </span>
-        <h1 className="text-2xl font-editorial italic text-[#F4F7F4] mb-1">
-          Train your signals.
-        </h1>
-        <p className="text-xs text-[#8EA898] leading-relaxed">
-          Short cognitive exercises designed to observe changes in attention, inhibition and reaction.
-        </p>
-      </section>
-
-      {/* "Today's session" Progress Card */}
-      <section className="p-4 rounded-3xl bg-[#0C2218] border border-[#19432F] flex items-center justify-between">
-        <div>
-          <div className="flex items-center gap-2 mb-1">
-            <span className="text-xs font-semibold text-[#F4F7F4]">Today's Session</span>
-            <span className="text-[10px] text-[#2FE4A6] bg-[#07160F] px-2 py-0.5 rounded-full font-mono">
-              {completedCount} / 3 Completed
-            </span>
+  const games = [
+    {
+      id: 'gonogo' as GameType,
+      title: 'GO / NO-GO',
+      subtitle: 'Attention & inhibition',
+      desc: 'Tap rapidly on green signals. Withhold on infrequent distractor triggers.',
+      duration: '90 sec',
+      completed: isCompletedToday('gonogo'),
+      visual: (
+        <div className="w-28 h-28 mx-auto relative flex items-center justify-center my-2">
+          {/* Concentric pulsing rings */}
+          <div
+            className="absolute inset-0 rounded-full border animate-ping opacity-25"
+            style={{ borderColor: colors.accent }}
+          />
+          <div
+            className="absolute inset-2 rounded-full border animate-pulse"
+            style={{ borderColor: colors.accent, opacity: 0.4 }}
+          />
+          <div
+            className="w-16 h-16 rounded-full border flex items-center justify-center shadow-sm"
+            style={{
+              backgroundColor: colors.surfaceSunken,
+              borderColor: colors.accent,
+            }}
+          >
+            <span
+              className="w-3 h-3 rounded-full"
+              style={{
+                backgroundColor: colors.accent,
+                boxShadow: `0 0 8px ${colors.accent}`,
+              }}
+            />
           </div>
-          <p className="text-[11px] text-[#8EA898]">
-            {completedCount === 3
-              ? 'All daily cognitive signal tasks completed.'
-              : 'Complete all 3 mini-exercises for full daily mapping.'}
+        </div>
+      ),
+    },
+    {
+      id: 'reaction_dot' as GameType,
+      title: 'REACTION DOT',
+      subtitle: 'Reaction speed',
+      desc: 'Tap visual stimuli the exact millisecond they manifest on screen.',
+      duration: '90 sec',
+      completed: isCompletedToday('reaction_dot'),
+      visual: (
+        <div className="w-28 h-28 mx-auto relative flex items-center justify-center my-2">
+          {/* Orbiting dot track */}
+          <div
+            className="w-20 h-20 rounded-full border border-dashed animate-[spin_8s_linear_infinite] relative flex items-center justify-center"
+            style={{ borderColor: colors.accent, opacity: 0.5 }}
+          >
+            <span
+              className="absolute -top-1.5 w-3 h-3 rounded-full"
+              style={{
+                backgroundColor: colors.accent,
+                boxShadow: `0 0 8px ${colors.accent}`,
+              }}
+            />
+          </div>
+          <div
+            className="absolute w-8 h-8 rounded-full border flex items-center justify-center"
+            style={{
+              backgroundColor: colors.surfaceSunken,
+              borderColor: colors.border,
+            }}
+          >
+            <span className="w-2 h-2 rounded-full" style={{ backgroundColor: colors.accent }} />
+          </div>
+        </div>
+      ),
+    },
+    {
+      id: 'memory_sequence' as GameType,
+      title: 'MEMORY SEQUENCE',
+      subtitle: 'Working memory',
+      desc: 'Observe illuminated spatial sequence and reproduce chronological order.',
+      duration: '90 sec',
+      completed: isCompletedToday('memory_sequence'),
+      visual: (
+        <div className="w-28 h-28 mx-auto flex items-center justify-center my-2">
+          {/* 3x3 illuminated grid pattern */}
+          <div
+            className="grid grid-cols-3 gap-1.5 p-2 rounded-xl border"
+            style={{
+              backgroundColor: colors.surfaceSunken,
+              borderColor: colors.border,
+            }}
+          >
+            {[0, 1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
+              <div
+                key={i}
+                className="w-5 h-5 rounded-md transition-all duration-500"
+                style={{
+                  backgroundColor:
+                    i === 1 || i === 4 || i === 6 ? colors.accent : colors.surfaceElevated,
+                  boxShadow:
+                    i === 1 || i === 4 || i === 6 ? `0 0 8px ${colors.accentSoft}` : 'none',
+                }}
+              />
+            ))}
+          </div>
+        </div>
+      ),
+    },
+  ];
+
+  const currentGame = games[currentCardIndex];
+
+  return (
+    <div className="space-y-4 pb-20 pt-1 animate-fadeIn max-w-sm mx-auto theme-fade-transition">
+      {/* Header & Title */}
+      <section className="pt-1 flex items-start justify-between">
+        <div>
+          <h1 className="text-2xl font-normal" style={{ color: colors.primaryText }}>
+            Train your signals.
+          </h1>
+          <p className="text-xs mt-0.5" style={{ color: colors.secondaryText }}>
+            Short cognitive exercises.
           </p>
         </div>
 
-        <div className="w-10 h-10 rounded-full border-2 border-[#1E4D37] flex items-center justify-center relative bg-[#07170F]">
-          <span className="text-xs font-bold font-mono text-[#2FE4A6]">
-            {Math.round((completedCount / 3) * 100)}%
+        {/* Compact Session Progress Pill */}
+        <div
+          className="px-2.5 py-1 rounded-full border flex items-center gap-1.5 text-[10px] font-mono"
+          style={{
+            backgroundColor: colors.surfaceSunken,
+            borderColor: colors.border,
+            color: colors.secondaryText,
+          }}
+        >
+          <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: colors.accent }} />
+          <span className="font-semibold" style={{ color: colors.primaryText }}>
+            {completedCount} / 3
           </span>
+          <span>Done</span>
         </div>
       </section>
 
-      {/* GAME 1 CARD: GO / NO-GO */}
-      <section className="rounded-3xl bg-[#0D2319] border border-[#1A4430] p-5 relative overflow-hidden group hover:border-[#2FE4A6]/50 transition-colors">
-        <div className="flex items-start justify-between mb-3">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-2xl bg-[#143625] border border-[#205139] flex items-center justify-center text-[#2FE4A6] shrink-0">
-              <ShieldAlert className="w-5 h-5" />
+      {/* Horizontal Carousel Game Deck */}
+      <section className="relative">
+        <div
+          className="p-5 rounded-3xl border flex flex-col justify-between min-h-[340px] shadow-sm relative overflow-hidden transition-all duration-300 theme-fade-transition"
+          style={{
+            backgroundColor: colors.surface,
+            borderColor: colors.border,
+          }}
+        >
+          {/* Card Top Meta */}
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <span
+                className="text-[10px] uppercase font-bold tracking-widest"
+                style={{ color: colors.accentText }}
+              >
+                {currentGame.subtitle}
+              </span>
+              {currentGame.completed && (
+                <span
+                  className="flex items-center gap-1 text-[9px] px-2 py-0.5 rounded-full border"
+                  style={{
+                    backgroundColor: colors.accentSoft,
+                    borderColor: colors.accent,
+                    color: colors.accentText,
+                  }}
+                >
+                  <CheckCircle2 className="w-2.5 h-2.5" />
+                  <span>Done</span>
+                </span>
+              )}
             </div>
-            <div>
-              <div className="flex items-center gap-2">
-                <h3 className="text-base font-semibold text-[#F4F7F4]">GO / NO-GO</h3>
-                {isCompletedToday('gonogo') && (
-                  <span className="flex items-center gap-1 text-[10px] text-[#2FE4A6] bg-[#0A1D13] px-2 py-0.5 rounded-full border border-[#19402C]">
-                    <CheckCircle2 className="w-3 h-3" />
-                    <span>Done today</span>
-                  </span>
-                )}
-              </div>
-              <p className="text-xs text-[#2FE4A6] font-editorial italic">
-                Inhibition & attention
-              </p>
+            <div className="flex items-center gap-1 text-[10px] font-mono" style={{ color: colors.tertiaryText }}>
+              <Clock className="w-3 h-3" />
+              <span>{currentGame.duration}</span>
             </div>
           </div>
 
-          <div className="flex items-center gap-1 text-[11px] text-[#8EA898] bg-[#081810] px-2.5 py-1 rounded-full">
-            <Clock className="w-3 h-3 text-[#8EA898]" />
-            <span>~90 sec</span>
+          {/* Abstract Visual Asset */}
+          <div className="py-2">{currentGame.visual}</div>
+
+          {/* Title & Description */}
+          <div className="text-center space-y-1">
+            <h3 className="text-xl font-bold tracking-tight" style={{ color: colors.primaryText }}>
+              {currentGame.title}
+            </h3>
+            <p
+              className="text-xs leading-relaxed max-w-[260px] mx-auto"
+              style={{ color: colors.secondaryText }}
+            >
+              {currentGame.desc}
+            </p>
+          </div>
+
+          {/* Primary Action Button */}
+          <div className="pt-4">
+            <button
+              id={`btn-launch-${currentGame.id}`}
+              onClick={() => handleStartGame(currentGame.id)}
+              className="w-full py-3 rounded-2xl font-semibold text-xs transition-all active:scale-[0.98] flex items-center justify-center gap-2 shadow-sm"
+              style={{
+                backgroundColor: colors.accent,
+                color: colors.accentContrast,
+              }}
+            >
+              <Play className="w-3.5 h-3.5 fill-current" />
+              <span>{currentGame.completed ? 'PLAY AGAIN' : 'PLAY'}</span>
+            </button>
           </div>
         </div>
 
-        <p className="text-xs text-[#8EA898] leading-relaxed mb-4">
-          Respond rapidly to standard stimuli while withholding responses to infrequent target distractor signals. Measures motor inhibition and response latency.
-        </p>
+        {/* Carousel Navigation Arrows */}
+        <button
+          onClick={() => setCurrentCardIndex((prev) => (prev === 0 ? games.length - 1 : prev - 1))}
+          className="absolute -left-2.5 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full border flex items-center justify-center shadow-md backdrop-blur-md transition-all active:scale-95"
+          style={{
+            backgroundColor: colors.surfaceElevated,
+            borderColor: colors.border,
+            color: colors.secondaryText,
+          }}
+          aria-label="Previous Game"
+        >
+          <ChevronLeft className="w-4 h-4" />
+        </button>
 
-        <div className="flex items-center justify-between pt-2 border-t border-[#143526]">
-          <span className="text-[11px] text-[#7A9886]">
-            Records: RT, Go/No-Go accuracy, commission errors
-          </span>
+        <button
+          onClick={() => setCurrentCardIndex((prev) => (prev === games.length - 1 ? 0 : prev + 1))}
+          className="absolute -right-2.5 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full border flex items-center justify-center shadow-md backdrop-blur-md transition-all active:scale-95"
+          style={{
+            backgroundColor: colors.surfaceElevated,
+            borderColor: colors.border,
+            color: colors.secondaryText,
+          }}
+          aria-label="Next Game"
+        >
+          <ChevronRight className="w-4 h-4" />
+        </button>
+      </section>
 
+      {/* Pagination Dots */}
+      <div className="flex items-center justify-center gap-2 pt-1">
+        {games.map((g, idx) => (
           <button
-            id="btn-launch-gonogo"
-            onClick={() => setActiveGame('gonogo')}
-            className="px-4 py-2 rounded-xl bg-[#2FE4A6] hover:bg-[#4EF2BB] text-[#06110C] text-xs font-semibold transition-colors flex items-center gap-1.5"
-          >
-            <Play className="w-3.5 h-3.5 fill-current" />
-            <span>{isCompletedToday('gonogo') ? 'Play Again' : 'Start Game'}</span>
-          </button>
-        </div>
-      </section>
+            key={g.id}
+            onClick={() => setCurrentCardIndex(idx)}
+            className="transition-all duration-200"
+            style={{
+              width: currentCardIndex === idx ? '20px' : '6px',
+              height: '6px',
+              borderRadius: '9999px',
+              backgroundColor: currentCardIndex === idx ? colors.accent : colors.borderHighlight,
+            }}
+            aria-label={`Jump to ${g.title}`}
+          />
+        ))}
+      </div>
 
-      {/* GAME 2 CARD: REACTION DOT */}
-      <section className="rounded-3xl bg-[#0D2319] border border-[#1A4430] p-5 relative overflow-hidden group hover:border-[#2FE4A6]/50 transition-colors">
-        <div className="flex items-start justify-between mb-3">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-2xl bg-[#143625] border border-[#205139] flex items-center justify-center text-[#2FE4A6] shrink-0">
-              <Target className="w-5 h-5" />
-            </div>
-            <div>
-              <div className="flex items-center gap-2">
-                <h3 className="text-base font-semibold text-[#F4F7F4]">REACTION DOT</h3>
-                {isCompletedToday('reaction_dot') && (
-                  <span className="flex items-center gap-1 text-[10px] text-[#2FE4A6] bg-[#0A1D13] px-2 py-0.5 rounded-full border border-[#19402C]">
-                    <CheckCircle2 className="w-3 h-3" />
-                    <span>Done today</span>
-                  </span>
-                )}
-              </div>
-              <p className="text-xs text-[#2FE4A6] font-editorial italic">
-                Reaction speed
-              </p>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-1 text-[11px] text-[#8EA898] bg-[#081810] px-2.5 py-1 rounded-full">
-            <Clock className="w-3 h-3 text-[#8EA898]" />
-            <span>~90 sec</span>
-          </div>
-        </div>
-
-        <p className="text-xs text-[#8EA898] leading-relaxed mb-4">
-          A touch target appears at randomized coordinates with variable inter-trial intervals. Tap instantly upon perception to evaluate visual orientation and motor speed.
-        </p>
-
-        <div className="flex items-center justify-between pt-2 border-t border-[#143526]">
-          <span className="text-[11px] text-[#7A9886]">
-            Records: Avg RT, median RT, variability, misses
-          </span>
-
-          <button
-            id="btn-launch-reactiondot"
-            onClick={() => setActiveGame('reaction_dot')}
-            className="px-4 py-2 rounded-xl bg-[#2FE4A6] hover:bg-[#4EF2BB] text-[#06110C] text-xs font-semibold transition-colors flex items-center gap-1.5"
-          >
-            <Play className="w-3.5 h-3.5 fill-current" />
-            <span>{isCompletedToday('reaction_dot') ? 'Play Again' : 'Start Game'}</span>
-          </button>
-        </div>
-      </section>
-
-      {/* GAME 3 CARD: MEMORY SEQUENCE */}
-      <section className="rounded-3xl bg-[#0D2319] border border-[#1A4430] p-5 relative overflow-hidden group hover:border-[#2FE4A6]/50 transition-colors">
-        <div className="flex items-start justify-between mb-3">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-2xl bg-[#143625] border border-[#205139] flex items-center justify-center text-[#2FE4A6] shrink-0">
-              <Grid className="w-5 h-5" />
-            </div>
-            <div>
-              <div className="flex items-center gap-2">
-                <h3 className="text-base font-semibold text-[#F4F7F4]">MEMORY SEQUENCE</h3>
-                {isCompletedToday('memory_sequence') && (
-                  <span className="flex items-center gap-1 text-[10px] text-[#2FE4A6] bg-[#0A1D13] px-2 py-0.5 rounded-full border border-[#19402C]">
-                    <CheckCircle2 className="w-3 h-3" />
-                    <span>Done today</span>
-                  </span>
-                )}
-              </div>
-              <p className="text-xs text-[#2FE4A6] font-editorial italic">
-                Working memory
-              </p>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-1 text-[11px] text-[#8EA898] bg-[#081810] px-2.5 py-1 rounded-full">
-            <Clock className="w-3 h-3 text-[#8EA898]" />
-            <span>~90 sec</span>
-          </div>
-        </div>
-
-        <p className="text-xs text-[#8EA898] leading-relaxed mb-4">
-          A spatial sequence of matrix cells briefly illuminates. Reproduce the pattern in chronological order as sequence complexity progressively escalates.
-        </p>
-
-        <div className="flex items-center justify-between pt-2 border-t border-[#143526]">
-          <span className="text-[11px] text-[#7A9886]">
-            Records: Max span, sequence accuracy, recall time
-          </span>
-
-          <button
-            id="btn-launch-memorysequence"
-            onClick={() => setActiveGame('memory_sequence')}
-            className="px-4 py-2 rounded-xl bg-[#2FE4A6] hover:bg-[#4EF2BB] text-[#06110C] text-xs font-semibold transition-colors flex items-center gap-1.5"
-          >
-            <Play className="w-3.5 h-3.5 fill-current" />
-            <span>{isCompletedToday('memory_sequence') ? 'Play Again' : 'Start Game'}</span>
-          </button>
-        </div>
-      </section>
-
-      {/* Non Diagnostic Disclaimer Note */}
-      <div className="p-4 rounded-2xl bg-[#06130D] border border-[#133022] text-[11px] text-[#789682] leading-relaxed">
-        <strong className="text-[#A4C2AF] block mb-0.5">Objective Signal Observation:</strong>
-        Manobah cognitive tasks are calibrated to observe day-to-day autonomic performance stability. They are not psychological diagnostic tests or IQ evaluators.
+      {/* Discrete Footnote */}
+      <div
+        className="p-3 rounded-2xl border flex items-center gap-2 text-[10px] theme-fade-transition"
+        style={{
+          backgroundColor: colors.surface,
+          borderColor: colors.border,
+          color: colors.secondaryText,
+        }}
+      >
+        <ShieldCheck className="w-3.5 h-3.5 shrink-0" style={{ color: colors.accentText }} />
+        <span>Cognitive timings are analyzed entirely on-device to build your personal baseline.</span>
       </div>
     </div>
   );

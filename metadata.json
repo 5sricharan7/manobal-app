@@ -1,6 +1,8 @@
 {
-  "name": "Manobah Mobile",
-  "description": "Personal Wellness and Cognitive Monitoring companion for Manobah-AI featuring Health Connect, cognitive mini-games, and privacy-first local welfare intelligence.",
+  "name": "Manobal Mobile",
+  "description": "Personal Wellness and Cognitive Monitoring companion for Manobal-AI featuring Health Connect, cognitive mini-games, and privacy-first local welfare intelligence.",
   "requestFramePermissions": [],
-  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
 }

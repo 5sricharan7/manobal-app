@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { X, Copy, Check, Terminal, FileCode, CheckCircle2 } from 'lucide-react';
+import { X, Copy, Terminal, FileCode, CheckCircle2 } from 'lucide-react';
+import { useTheme } from '../theme/ThemeContext';
 
 interface AndroidCodeModalProps {
   isOpen: boolean;
@@ -13,7 +14,7 @@ const ANDROID_FILES: { name: string; path: string; lang: string; content: string
     lang: 'xml',
     content: `<?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="ai.manobah.mobile">
+    package="ai.manobal.mobile">
 
     <!-- Android Health Connect permissions -->
     <uses-permission android:name="android.permission.health.READ_HEART_RATE"/>
@@ -24,19 +25,19 @@ const ANDROID_FILES: { name: string; path: string; lang: string; content: string
     <uses-permission android:name="android.permission.health.READ_TOTAL_CALORIES_BURNED"/>
 
     <application
-        android:name=".ManobahApp"
+        android:name=".ManobalApp"
         android:allowBackup="false"
         android:icon="@mipmap/ic_launcher"
-        android:label="Manobah Mobile"
+        android:label="Manobal Mobile"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.ManobahMobile">
+        android:theme="@style/Theme.ManobalMobile">
 
         <activity
             android:name=".MainActivity"
             android:exported="true"
             android:screenOrientation="portrait"
-            android:theme="@style/Theme.ManobahMobile">
+            android:theme="@style/Theme.ManobalMobile">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -69,11 +70,11 @@ const ANDROID_FILES: { name: string; path: string; lang: string; content: string
 }
 
 android {
-    namespace = "ai.manobah.mobile"
+    namespace = "ai.manobal.mobile"
     compileSdk = 35
 
     defaultConfig {
-        applicationId = "ai.manobah.mobile"
+        applicationId = "ai.manobal.mobile"
         minSdk = 28
         targetSdk = 35
         versionCode = 1
@@ -116,9 +117,9 @@ dependencies {
   },
   {
     name: 'HealthConnectManager.kt',
-    path: 'app/src/main/java/ai/manobah/mobile/health/HealthConnectManager.kt',
+    path: 'app/src/main/java/ai/manobal/mobile/health/HealthConnectManager.kt',
     lang: 'kotlin',
-    content: `package ai.manobah.mobile.health
+    content: `package ai.manobal.mobile.health
 
 import android.content.Context
 import androidx.health.connect.client.HealthConnectClient
@@ -192,16 +193,16 @@ class HealthConnectManager(private val context: Context) {
   },
   {
     name: 'Theme.kt',
-    path: 'app/src/main/java/ai/manobah/mobile/ui/theme/Theme.kt',
+    path: 'app/src/main/java/ai/manobal/mobile/ui/theme/Theme.kt',
     lang: 'kotlin',
-    content: `package ai.manobah.mobile.ui.theme
+    content: `package ai.manobal.mobile.ui.theme
 
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 
-// Manobah-AI Visual Identity: Deep Forest Green + Mint + Soft Cream
+// Manobal-AI Visual Identity: Deep Forest Green + Mint + Soft Cream
 val ForestBackground = Color(0xFF06110C)
 val ForestCard = Color(0xFF0D2017)
 val ForestBorder = Color(0xFF18382A)
@@ -211,7 +212,7 @@ val SageMuted = Color(0xFF8EA898)
 val CreamText = Color(0xFFF4F7F4)
 val ErrorCommission = Color(0xFFF28B82)
 
-private val ManobahColorScheme = darkColorScheme(
+private val ManobalColorScheme = darkColorScheme(
     primary = MintAccent,
     onPrimary = ForestBackground,
     background = ForestBackground,
@@ -224,19 +225,19 @@ private val ManobahColorScheme = darkColorScheme(
 )
 
 @Composable
-fun ManobahMobileTheme(content: @Composable () -> Unit) {
+fun ManobalMobileTheme(content: @Composable () -> Unit) {
     MaterialTheme(
-        colorScheme = ManobahColorScheme,
-        typography = ManobahTypography,
+        colorScheme = ManobalColorScheme,
+        typography = ManobalTypography,
         content = content
     )
 }`,
   },
   {
     name: 'GoNoGoGame.kt',
-    path: 'app/src/main/java/ai/manobah/mobile/games/GoNoGoGame.kt',
+    path: 'app/src/main/java/ai/manobal/mobile/games/GoNoGoGame.kt',
     lang: 'kotlin',
-    content: `package ai.manobah.mobile.games
+    content: `package ai.manobal.mobile.games
 
 import androidx.compose.runtime.*
 import kotlinx.coroutines.*
@@ -291,6 +292,7 @@ class GoNoGoEngine {
 ];
 
 export const AndroidCodeModal: React.FC<AndroidCodeModalProps> = ({ isOpen, onClose }) => {
+  const { colors, isDark } = useTheme();
   const [selectedFileIdx, setSelectedFileIdx] = useState(0);
   const [copied, setCopied] = useState(false);
 
@@ -305,31 +307,64 @@ export const AndroidCodeModal: React.FC<AndroidCodeModalProps> = ({ isOpen, onCl
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-5 bg-black/85 backdrop-blur-md animate-fadeIn">
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-5 backdrop-blur-md animate-fadeIn"
+      style={{ backgroundColor: isDark ? 'rgba(0,0,0,0.85)' : 'rgba(15,23,42,0.5)' }}
+    >
       <div
         id="android-code-modal"
-        className="w-full max-w-2xl rounded-3xl bg-[#07150E] border border-[#173F2D] shadow-2xl flex flex-col max-h-[92vh] overflow-hidden text-[#F4F7F4]"
+        className="w-full max-w-2xl rounded-3xl border shadow-2xl flex flex-col max-h-[92vh] overflow-hidden theme-fade-transition"
+        style={{
+          backgroundColor: colors.surface,
+          borderColor: colors.border,
+          color: colors.primaryText,
+        }}
       >
         {/* Modal Top Bar */}
-        <div className="flex items-center justify-between px-5 py-3.5 border-b border-[#143324] bg-[#0A1C13]">
+        <div
+          className="flex items-center justify-between px-5 py-3.5 border-b"
+          style={{
+            backgroundColor: colors.surfaceSunken,
+            borderColor: colors.borderSubtle,
+          }}
+        >
           <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-xl bg-[#102C1E] border border-[#1F543A] flex items-center justify-center text-[#2FE4A6]">
+            <div
+              className="w-8 h-8 rounded-xl border flex items-center justify-center"
+              style={{
+                backgroundColor: colors.accentSoft,
+                borderColor: colors.accent,
+                color: colors.accentText,
+              }}
+            >
               <Terminal className="w-4 h-4" />
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <h3 className="text-sm font-semibold text-[#F4F7F4]">Native Android Jetpack Compose</h3>
-                <span className="px-2 py-0.5 rounded-full bg-[#173A29] text-[10px] text-[#2FE4A6] font-mono">
+                <h3 className="text-sm font-semibold" style={{ color: colors.primaryText }}>
+                  Native Android Jetpack Compose
+                </h3>
+                <span
+                  className="px-2 py-0.5 rounded-full text-[10px] font-mono border"
+                  style={{
+                    backgroundColor: colors.accentSoft,
+                    borderColor: colors.accent,
+                    color: colors.accentText,
+                  }}
+                >
                   Kotlin
                 </span>
               </div>
-              <p className="text-[11px] text-[#8EA898]">Clean Architecture • Health Connect • Local Signals</p>
+              <p className="text-[11px]" style={{ color: colors.secondaryText }}>
+                Clean Architecture • Health Connect • Local Signals
+              </p>
             </div>
           </div>
 
           <button
             onClick={onClose}
-            className="p-1.5 rounded-full text-[#8EA898] hover:text-[#F4F7F4] hover:bg-[#142F22] transition-colors"
+            className="p-1.5 rounded-full transition-colors"
+            style={{ color: colors.secondaryText }}
             aria-label="Close code dialog"
           >
             <X className="w-4 h-4" />
@@ -337,49 +372,100 @@ export const AndroidCodeModal: React.FC<AndroidCodeModalProps> = ({ isOpen, onCl
         </div>
 
         {/* File Tabs */}
-        <div className="flex items-center gap-1 px-4 py-2 bg-[#05110B] border-b border-[#132E20] overflow-x-auto text-xs">
-          {ANDROID_FILES.map((file, idx) => (
-            <button
-              key={file.name}
-              onClick={() => setSelectedFileIdx(idx)}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl whitespace-nowrap font-mono transition-colors ${
-                selectedFileIdx === idx
-                  ? 'bg-[#122F20] text-[#2FE4A6] border border-[#1F5339]'
-                  : 'text-[#8EA898] hover:text-[#D7E8DC] hover:bg-[#0A1D13]'
-              }`}
-            >
-              <FileCode className="w-3.5 h-3.5" />
-              <span>{file.name}</span>
-            </button>
-          ))}
+        <div
+          className="flex items-center gap-1 px-4 py-2 border-b overflow-x-auto text-xs"
+          style={{
+            backgroundColor: colors.surface,
+            borderColor: colors.borderSubtle,
+          }}
+        >
+          {ANDROID_FILES.map((file, idx) => {
+            const isSelected = selectedFileIdx === idx;
+            return (
+              <button
+                key={file.name}
+                onClick={() => setSelectedFileIdx(idx)}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl whitespace-nowrap font-mono transition-colors border"
+                style={{
+                  backgroundColor: isSelected ? colors.accentSoft : 'transparent',
+                  borderColor: isSelected ? colors.accent : 'transparent',
+                  color: isSelected ? colors.accentText : colors.secondaryText,
+                }}
+              >
+                <FileCode className="w-3.5 h-3.5" />
+                <span>{file.name}</span>
+              </button>
+            );
+          })}
         </div>
 
         {/* Code Content Container */}
-        <div className="relative flex-1 p-4 overflow-y-auto bg-[#040C08] font-mono text-xs text-[#D8E6DC] leading-relaxed">
-          <div className="flex items-center justify-between pb-2 mb-2 border-b border-[#122B1E] text-[11px] text-[#7A9985]">
-            <span>{currentFile.path}</span>
+        <div
+          className="relative flex-1 p-4 overflow-y-auto font-mono text-xs leading-relaxed"
+          style={{
+            backgroundColor: isDark ? '#0B0E11' : '#F1F5F9',
+            color: isDark ? '#D8E0E8' : '#0F172A',
+          }}
+        >
+          <div
+            className="flex items-center justify-between pb-2 mb-2 border-b text-[11px]"
+            style={{ borderColor: colors.borderSubtle, color: colors.secondaryText }}
+          >
+            <span className="font-mono">{currentFile.path}</span>
             <button
               onClick={handleCopy}
-              className="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-[#0F281B] hover:bg-[#153826] border border-[#1A432F] text-xs text-[#2FE4A6] transition-colors"
+              className="flex items-center gap-1 px-2.5 py-1 rounded-lg border text-xs transition-colors"
+              style={{
+                backgroundColor: colors.surfaceSunken,
+                borderColor: colors.border,
+                color: colors.accentText,
+              }}
             >
               {copied ? <CheckCircle2 className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
               <span>{copied ? 'Copied' : 'Copy Code'}</span>
             </button>
           </div>
 
-          <pre className="overflow-x-auto whitespace-pre font-mono text-[11.5px] p-2 bg-[#07130D] rounded-xl border border-[#112A1D]">
+          <pre
+            className="overflow-x-auto whitespace-pre font-mono text-[11.5px] p-3 rounded-2xl border"
+            style={{
+              backgroundColor: isDark ? '#0E1216' : '#FFFFFF',
+              borderColor: colors.borderSubtle,
+            }}
+          >
             <code>{currentFile.content}</code>
           </pre>
         </div>
 
         {/* Footer with CLI instructions */}
-        <div className="px-5 py-3 bg-[#081810] border-t border-[#133022] flex items-center justify-between text-xs text-[#8EA898]">
+        <div
+          className="px-5 py-3 border-t flex items-center justify-between text-xs"
+          style={{
+            backgroundColor: colors.surfaceSunken,
+            borderColor: colors.borderSubtle,
+            color: colors.secondaryText,
+          }}
+        >
           <span className="truncate max-w-sm text-[11px]">
-            To build in Android Studio or CLI: <code className="text-[#2FE4A6]">./gradlew assembleDebug</code>
+            To build in Android Studio:{' '}
+            <code
+              className="px-1.5 py-0.5 rounded border"
+              style={{
+                backgroundColor: colors.surface,
+                borderColor: colors.border,
+                color: colors.accentText,
+              }}
+            >
+              ./gradlew assembleDebug
+            </code>
           </span>
           <button
             onClick={handleCopy}
-            className="px-3 py-1.5 rounded-xl bg-[#2FE4A6] text-[#06110C] font-semibold text-xs hover:bg-[#4EF2BB] transition-colors"
+            className="px-3.5 py-1.5 rounded-xl font-bold text-xs transition-all shadow-sm active:scale-[0.98]"
+            style={{
+              backgroundColor: colors.accent,
+              color: colors.accentContrast,
+            }}
           >
             Copy File
           </button>

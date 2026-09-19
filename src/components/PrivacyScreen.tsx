@@ -1,14 +1,10 @@
 import React from 'react';
 import {
-  ShieldCheck,
-  Lock,
   EyeOff,
-  Database,
-  Smartphone,
   ArrowLeft,
   CheckCircle2,
-  AlertCircle,
 } from 'lucide-react';
+import { useTheme } from '../theme/ThemeContext';
 
 interface PrivacyScreenProps {
   onBack: () => void;
@@ -21,141 +17,245 @@ export const PrivacyScreen: React.FC<PrivacyScreenProps> = ({
   onOpenHealthConnect,
   onClearData,
 }) => {
+  const { colors } = useTheme();
+
   return (
-    <div className="space-y-6 pb-20 animate-fadeIn">
+    <div className="space-y-4 pb-20 pt-1 animate-fadeIn max-w-sm mx-auto theme-fade-transition">
       {/* Top Bar */}
-      <div className="flex items-center justify-between pt-2 pb-1">
+      <div className="flex items-center justify-between pt-1 pb-1">
         <button
           onClick={onBack}
-          className="flex items-center gap-1.5 text-xs text-[#8EA898] hover:text-[#F4F7F4] transition-colors"
+          className="flex items-center gap-1.5 text-xs transition-colors py-1 px-2 -ml-2 rounded-xl"
+          style={{ color: colors.secondaryText }}
         >
           <ArrowLeft className="w-4 h-4" />
           <span>Back to Profile</span>
         </button>
-        <span className="text-[10px] uppercase font-mono tracking-widest text-[#2FE4A6] bg-[#0E2319] px-2.5 py-0.5 rounded-full border border-[#1B4330]">
+        <span
+          className="text-[10px] uppercase font-mono tracking-widest px-2.5 py-0.5 rounded-full border"
+          style={{
+            backgroundColor: colors.accentSoft,
+            borderColor: colors.accent,
+            color: colors.accentText,
+          }}
+        >
           Privacy First
         </span>
       </div>
 
       {/* Editorial Title */}
       <section>
-        <span className="text-[10px] uppercase font-bold tracking-widest text-[#2FE4A6] block mb-1">
-          PRIVACY BY DESIGN
-        </span>
-        <h1 className="text-3xl font-editorial italic text-[#F4F7F4] mb-2">
+        <h1 className="text-2xl font-normal mb-1" style={{ color: colors.primaryText }}>
           Your data. Your choice.
         </h1>
-        <p className="text-xs text-[#8EA898] leading-relaxed">
-          Health data is deeply personal. Manobah is architected around on-device local computation, zero unconsented telemetry, and complete user sovereignty.
+        <p className="text-xs leading-relaxed" style={{ color: colors.secondaryText }}>
+          Health data is deeply personal. Manobal is architected around on-device local computation, zero unconsented telemetry, and complete user sovereignty.
         </p>
       </section>
 
       {/* What We Don't Do (The Negative Boundaries) */}
-      <section className="rounded-3xl bg-[#0B2016] border border-[#1A4430] p-5 space-y-3">
-        <h3 className="text-sm font-semibold text-[#F4F7F4] flex items-center gap-2">
-          <EyeOff className="w-4 h-4 text-[#2FE4A6]" />
+      <section
+        className="rounded-3xl border p-4 space-y-3 shadow-sm theme-fade-transition"
+        style={{
+          backgroundColor: colors.surface,
+          borderColor: colors.border,
+        }}
+      >
+        <h3 className="text-xs font-semibold flex items-center gap-2" style={{ color: colors.primaryText }}>
+          <EyeOff className="w-4 h-4" style={{ color: colors.accentText }} />
           <span>Explicit Technical Boundaries</span>
         </h3>
-        <p className="text-xs text-[#8EA898]">
-          To protect your identity and mental autonomy, Manobah enforces strict prohibitions:
+        <p className="text-[11px]" style={{ color: colors.secondaryText }}>
+          To protect your identity and mental autonomy, Manobal enforces strict prohibitions:
         </p>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1 text-xs">
-          <div className="p-3 rounded-2xl bg-[#081810] border border-[#143525] flex items-center gap-2.5">
-            <CheckCircle2 className="w-4 h-4 text-[#2FE4A6] shrink-0" />
-            <span className="text-[#D8E6DD]">No camera required</span>
+        <div className="grid grid-cols-2 gap-2 pt-0.5 text-xs">
+          <div
+            className="p-2.5 rounded-2xl border flex items-center gap-2"
+            style={{
+              backgroundColor: colors.surfaceSunken,
+              borderColor: colors.borderSubtle,
+            }}
+          >
+            <CheckCircle2 className="w-3.5 h-3.5 shrink-0" style={{ color: colors.accentText }} />
+            <span className="text-[11px]" style={{ color: colors.primaryText }}>No camera</span>
           </div>
-          <div className="p-3 rounded-2xl bg-[#081810] border border-[#143525] flex items-center gap-2.5">
-            <CheckCircle2 className="w-4 h-4 text-[#2FE4A6] shrink-0" />
-            <span className="text-[#D8E6DD]">No microphone required</span>
+          <div
+            className="p-2.5 rounded-2xl border flex items-center gap-2"
+            style={{
+              backgroundColor: colors.surfaceSunken,
+              borderColor: colors.borderSubtle,
+            }}
+          >
+            <CheckCircle2 className="w-3.5 h-3.5 shrink-0" style={{ color: colors.accentText }} />
+            <span className="text-[11px]" style={{ color: colors.primaryText }}>No microphone</span>
           </div>
-          <div className="p-3 rounded-2xl bg-[#081810] border border-[#143525] flex items-center gap-2.5">
-            <CheckCircle2 className="w-4 h-4 text-[#2FE4A6] shrink-0" />
-            <span className="text-[#D8E6DD]">No facial recognition</span>
+          <div
+            className="p-2.5 rounded-2xl border flex items-center gap-2"
+            style={{
+              backgroundColor: colors.surfaceSunken,
+              borderColor: colors.borderSubtle,
+            }}
+          >
+            <CheckCircle2 className="w-3.5 h-3.5 shrink-0" style={{ color: colors.accentText }} />
+            <span className="text-[11px]" style={{ color: colors.primaryText }}>No face scan</span>
           </div>
-          <div className="p-3 rounded-2xl bg-[#081810] border border-[#143525] flex items-center gap-2.5">
-            <CheckCircle2 className="w-4 h-4 text-[#2FE4A6] shrink-0" />
-            <span className="text-[#D8E6DD]">No location tracking</span>
+          <div
+            className="p-2.5 rounded-2xl border flex items-center gap-2"
+            style={{
+              backgroundColor: colors.surfaceSunken,
+              borderColor: colors.borderSubtle,
+            }}
+          >
+            <CheckCircle2 className="w-3.5 h-3.5 shrink-0" style={{ color: colors.accentText }} />
+            <span className="text-[11px]" style={{ color: colors.primaryText }}>No GPS tracking</span>
           </div>
         </div>
       </section>
 
       {/* Four Discrete Data Categories */}
-      <section className="rounded-3xl bg-[#0D2319] border border-[#19402E] p-5 space-y-4">
+      <section
+        className="rounded-3xl border p-4 space-y-3 shadow-sm theme-fade-transition"
+        style={{
+          backgroundColor: colors.surface,
+          borderColor: colors.border,
+        }}
+      >
         <div>
-          <span className="text-[10px] uppercase font-bold tracking-widest text-[#2FE4A6]">
+          <span
+            className="text-[10px] uppercase font-bold tracking-widest block"
+            style={{ color: colors.tertiaryText }}
+          >
             DATA ARCHITECTURE
           </span>
-          <h3 className="text-base font-semibold text-[#F4F7F4] mt-0.5">
-            Four Segregated Data Streams
+          <h3 className="text-sm font-semibold mt-0.5" style={{ color: colors.primaryText }}>
+            Segregated Data Streams
           </h3>
         </div>
 
-        <div className="space-y-3">
+        <div className="space-y-2">
           {/* Stream 1 */}
-          <div className="p-3.5 rounded-2xl bg-[#081A12] border border-[#163B29]">
-            <div className="flex items-center justify-between mb-1">
-              <h4 className="text-xs font-semibold text-[#2FE4A6]">1. Health Connect Data</h4>
-              <span className="text-[10px] text-[#8EA898] font-mono">Local Only</span>
+          <div
+            className="p-3 rounded-2xl border"
+            style={{
+              backgroundColor: colors.surfaceSunken,
+              borderColor: colors.borderSubtle,
+            }}
+          >
+            <div className="flex items-center justify-between mb-0.5">
+              <h4 className="text-xs font-semibold" style={{ color: colors.accentText }}>
+                1. Health Connect Data
+              </h4>
+              <span className="text-[10px] font-mono" style={{ color: colors.tertiaryText }}>
+                Local Only
+              </span>
             </div>
-            <p className="text-[11px] text-[#8EA898] leading-relaxed">
-              Heart rate, resting HR, HRV, sleep, and steps read exclusively via Android Health Connect API. Stored in local app sandbox memory. Never transmitted to remote servers in this MVP.
+            <p className="text-[11px] leading-relaxed" style={{ color: colors.secondaryText }}>
+              Heart rate, resting HR, HRV, sleep, and steps read exclusively via Android Health Connect API. Stored in local app sandbox memory.
             </p>
           </div>
 
           {/* Stream 2 */}
-          <div className="p-3.5 rounded-2xl bg-[#081A12] border border-[#163B29]">
-            <div className="flex items-center justify-between mb-1">
-              <h4 className="text-xs font-semibold text-[#2FE4A6]">2. Cognitive Game Telemetry</h4>
-              <span className="text-[10px] text-[#8EA898] font-mono">Anonymized Local</span>
+          <div
+            className="p-3 rounded-2xl border"
+            style={{
+              backgroundColor: colors.surfaceSunken,
+              borderColor: colors.borderSubtle,
+            }}
+          >
+            <div className="flex items-center justify-between mb-0.5">
+              <h4 className="text-xs font-semibold" style={{ color: colors.accentText }}>
+                2. Cognitive Game Telemetry
+              </h4>
+              <span className="text-[10px] font-mono" style={{ color: colors.tertiaryText }}>
+                Anonymized Local
+              </span>
             </div>
-            <p className="text-[11px] text-[#8EA898] leading-relaxed">
-              Millisecond reaction timestamps, accuracy rates, and error tallies. Minimal raw metrics needed to calculate latency variability. Kept strictly on-device.
+            <p className="text-[11px] leading-relaxed" style={{ color: colors.secondaryText }}>
+              Millisecond reaction timestamps, accuracy rates, and error tallies. Minimal raw metrics needed to calculate latency variability.
             </p>
           </div>
 
           {/* Stream 3 */}
-          <div className="p-3.5 rounded-2xl bg-[#081A12] border border-[#163B29]">
-            <div className="flex items-center justify-between mb-1">
-              <h4 className="text-xs font-semibold text-[#2FE4A6]">3. Wellness Check-In Data</h4>
-              <span className="text-[10px] text-[#8EA898] font-mono">User Authored</span>
+          <div
+            className="p-3 rounded-2xl border"
+            style={{
+              backgroundColor: colors.surfaceSunken,
+              borderColor: colors.borderSubtle,
+            }}
+          >
+            <div className="flex items-center justify-between mb-0.5">
+              <h4 className="text-xs font-semibold" style={{ color: colors.accentText }}>
+                3. Wellness Check-In Data
+              </h4>
+              <span className="text-[10px] font-mono" style={{ color: colors.tertiaryText }}>
+                User Authored
+              </span>
             </div>
-            <p className="text-[11px] text-[#8EA898] leading-relaxed">
-              1-to-5 ratings and optional textual reflections. Saved locally in encrypted app storage. You can delete or edit any entry at any time.
+            <p className="text-[11px] leading-relaxed" style={{ color: colors.secondaryText }}>
+              1-to-5 ratings and optional textual reflections. Saved locally on device. You can delete entries at any time.
             </p>
           </div>
 
           {/* Stream 4 */}
-          <div className="p-3.5 rounded-2xl bg-[#081A12] border border-[#163B29]">
-            <div className="flex items-center justify-between mb-1">
-              <h4 className="text-xs font-semibold text-[#2FE4A6]">4. Product Feedback</h4>
-              <span className="text-[10px] text-[#8EA898] font-mono">App Usability</span>
+          <div
+            className="p-3 rounded-2xl border"
+            style={{
+              backgroundColor: colors.surfaceSunken,
+              borderColor: colors.borderSubtle,
+            }}
+          >
+            <div className="flex items-center justify-between mb-0.5">
+              <h4 className="text-xs font-semibold" style={{ color: colors.accentText }}>
+                4. Product Feedback
+              </h4>
+              <span className="text-[10px] font-mono" style={{ color: colors.tertiaryText }}>
+                App Usability
+              </span>
             </div>
-            <p className="text-[11px] text-[#8EA898] leading-relaxed">
-              Star ratings and suggestions about app flow. Strictly segregated from your health signals and cognitive scores.
+            <p className="text-[11px] leading-relaxed" style={{ color: colors.secondaryText }}>
+              Star ratings and suggestions about app flow. Strictly segregated from your biometric signals.
             </p>
           </div>
         </div>
       </section>
 
       {/* User Controls */}
-      <section className="rounded-3xl bg-[#0B2016] border border-[#1A4430] p-5 space-y-3">
-        <h3 className="text-sm font-semibold text-[#F4F7F4]">Your Privacy Controls</h3>
-        <p className="text-xs text-[#8EA898]">
+      <section
+        className="rounded-3xl border p-4 space-y-3 shadow-sm theme-fade-transition"
+        style={{
+          backgroundColor: colors.surface,
+          borderColor: colors.border,
+        }}
+      >
+        <h3 className="text-xs font-semibold" style={{ color: colors.primaryText }}>
+          Your Privacy Controls
+        </h3>
+        <p className="text-[11px]" style={{ color: colors.secondaryText }}>
           You maintain full authority over all permissions and stored signals.
         </p>
 
-        <div className="flex flex-col gap-2 pt-1">
+        <div className="flex flex-col gap-2 pt-0.5">
           <button
             onClick={onOpenHealthConnect}
-            className="w-full py-2.5 rounded-xl bg-[#143526] hover:bg-[#1A4430] text-[#2FE4A6] text-xs font-medium transition-colors text-center"
+            className="w-full py-2.5 rounded-xl text-xs font-medium transition-colors text-center border active:scale-[0.98]"
+            style={{
+              backgroundColor: colors.accentSoft,
+              borderColor: colors.accent,
+              color: colors.accentText,
+            }}
           >
             Manage Health Connect Permissions
           </button>
 
           <button
             onClick={onClearData}
-            className="w-full py-2.5 rounded-xl border border-[#3C1C1C] text-[#F28B82] hover:bg-[#200D0D] text-xs font-medium transition-colors text-center"
+            className="w-full py-2.5 rounded-xl border text-xs font-medium transition-colors text-center active:scale-[0.98]"
+            style={{
+              backgroundColor: colors.surfaceSunken,
+              borderColor: colors.error,
+              color: colors.error,
+            }}
           >
             Erase All Local Data on Device
           </button>

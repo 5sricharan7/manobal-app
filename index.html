@@ -3,18 +3,33 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <title>Manobah Mobile — Personal Welfare Intelligence</title>
-    <meta name="description" content="Personal Wellness and Cognitive Monitoring companion for Manobah-AI featuring Health Connect, cognitive mini-games, and privacy-first local welfare intelligence." />
-    <meta property="og:title" content="Manobah Mobile — Personal Welfare Intelligence" />
-    <meta property="og:description" content="Personal Wellness and Cognitive Monitoring companion for Manobah-AI featuring Health Connect, cognitive mini-games, and privacy-first local welfare intelligence." />
+    <title>Manobal Mobile — Personal Welfare Intelligence</title>
+    <meta name="description" content="Personal Wellness and Cognitive Monitoring companion for Manobal-AI featuring Health Connect, cognitive mini-games, and privacy-first local welfare intelligence." />
+    <meta property="og:title" content="Manobal Mobile — Personal Welfare Intelligence" />
+    <meta property="og:description" content="Personal Wellness and Cognitive Monitoring companion for Manobal-AI featuring Health Connect, cognitive mini-games, and privacy-first local welfare intelligence." />
     <meta property="og:type" content="website" />
     <meta name="twitter:card" content="summary_large_image" />
+    <!-- Prevent theme flash before DOM render -->
+    <script>
+      (function() {
+        try {
+          var saved = localStorage.getItem('manobal_theme_preference') || localStorage.getItem('manobah_theme_preference') || 'system';
+          var isDark = saved === 'dark' || (saved === 'system' && window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches);
+          var active = isDark ? 'dark' : 'light';
+          document.documentElement.setAttribute('data-theme', active);
+          document.documentElement.classList.add(active);
+          if (document.body) {
+            document.body.style.backgroundColor = isDark ? '#07090B' : '#E2E8E4';
+          }
+        } catch (e) {}
+      })();
+    </script>
     <!-- Editorial Serif & Modern Sans Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300..700;1,6..72,300..700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   </head>
-  <body class="bg-[#050D09] text-[#F4F7F4] antialiased selection:bg-[#2FE4A6]/30 selection:text-[#2FE4A6]">
+  <body class="bg-[#090C0E] text-[#F3F5F6] antialiased selection:bg-[#2FE4A6]/20 selection:text-[#2FE4A6] overflow-x-hidden">
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>

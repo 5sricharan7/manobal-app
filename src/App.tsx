@@ -31,10 +31,12 @@ import { OnboardingModal } from './components/OnboardingModal';
 import { HealthConnectModal } from './components/HealthConnectModal';
 import { AndroidCodeModal } from './components/AndroidCodeModal';
 import { FeedbackModal } from './components/FeedbackModal';
+import { useTheme } from './theme/ThemeContext';
 
 export default function App() {
+  const { colors } = useTheme();
   const [currentTab, setCurrentTab] = useState<NavigationTab>('home');
-  const [activeSubView, setActiveSubView] = useState<'privacy' | 'terms' | null>(null);
+  const [activeSubView, setActiveSubView] = useState<'privacy' | 'terms' | 'profile' | null>(null);
 
   // Health and activity states (persisted via local storage)
   const [healthSignals, setHealthSignals] = useState<HealthSignals>(() => loadHealthSignals());
@@ -87,7 +89,7 @@ export default function App() {
     };
     saveFeedback(fullFeedback);
     setFeedbackModal({ isOpen: false, source: 'general', metadata: '' });
-    showToast('Thank you for helping us refine Manobah.');
+    showToast('Thank you for helping us refine Manobal.');
   };
 
   const handleToggleDemoData = () => {
@@ -188,29 +190,60 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-[#050D09] text-[#F4F7F4] flex flex-col font-sans selection:bg-[#2FE4A6]/20 selection:text-[#2FE4A6]">
+    <div
+      className="min-h-screen flex flex-col font-sans theme-fade-transition"
+      style={{
+        backgroundColor: colors.canvas,
+        color: colors.primaryText,
+      }}
+    >
       {/* Centered Mobile App Container */}
-      <div className="w-full max-w-md mx-auto min-h-screen flex flex-col bg-[#06110C] relative shadow-2xl border-x border-[#122A1E]">
+      <div
+        className="w-full max-w-md mx-auto min-h-screen flex flex-col relative shadow-2xl border-x theme-fade-transition"
+        style={{
+          backgroundColor: colors.background,
+          borderColor: colors.borderSubtle,
+        }}
+      >
         {/* Sticky Mobile App Bar */}
         <Header
           healthSignals={healthSignals}
           onOpenHealthConnect={() => setShowHealthConnectModal(true)}
           onOpenAndroidCode={() => setShowAndroidCodeModal(true)}
+          onOpenProfile={() => setActiveSubView('profile')}
           isSyncing={isSyncing}
           onSync={handleSyncHealth}
         />
 
         {/* Global Toast Notification */}
         {toastMessage && (
-          <div className="fixed top-16 left-1/2 -translate-x-1/2 z-50 px-4 py-2 rounded-2xl bg-[#0E281C] border border-[#23583C] text-xs text-[#2FE4A6] shadow-xl animate-fadeIn flex items-center gap-2 max-w-[90%]">
-            <span className="w-2 h-2 rounded-full bg-[#2FE4A6]" />
+          <div
+            className="fixed top-16 left-1/2 -translate-x-1/2 z-50 px-4 py-2 rounded-2xl border text-xs shadow-xl animate-fadeIn flex items-center gap-2 max-w-[90%]"
+            style={{
+              backgroundColor: colors.surface,
+              borderColor: colors.border,
+              color: colors.accentText,
+            }}
+          >
+            <span className="w-2 h-2 rounded-full" style={{ backgroundColor: colors.accent }} />
             <span>{toastMessage}</span>
           </div>
         )}
 
         {/* Main View Area */}
         <main className="flex-1 px-4 pt-3 pb-6 overflow-y-auto">
-          {activeSubView === 'privacy' ? (
+          {activeSubView === 'profile' ? (
+            <ProfileScreen
+              healthSignals={healthSignals}
+              onOpenHealthConnect={() => setShowHealthConnectModal(true)}
+              onNavigatePrivacy={() => setActiveSubView('privacy')}
+              onNavigateTerms={() => setActiveSubView('terms')}
+              onOpenAndroidCode={() => setShowAndroidCodeModal(true)}
+              onClearLocalData={handleClearAllData}
+              onResetPermissions={handleResetPermissions}
+              onBack={() => setActiveSubView(null)}
+            />
+          ) : activeSubView === 'privacy' ? (
             <PrivacyScreen
               onBack={() => setActiveSubView(null)}
               onOpenHealthConnect={() => setShowHealthConnectModal(true)}
@@ -259,6 +292,7 @@ export default function App() {
                   checkIns={checkIns}
                   onSaveCheckIn={handleSaveCheckIn}
                   onRequestFeedback={handleOpenFeedback}
+                  onReturnHome={() => handleTabSelect('home')}
                 />
               )}
 

@@ -1,6 +1,16 @@
 import { GameSession, CheckInRecord, ProductFeedback, HealthSignals, HealthDayData, PersonalBaseline } from '../types';
 
 const STORAGE_KEYS = {
+  HEALTH_SIGNALS: 'manobal_health_signals',
+  HEALTH_7DAYS: 'manobal_health_7days',
+  GAME_SESSIONS: 'manobal_game_sessions',
+  CHECK_INS: 'manobal_check_ins',
+  FEEDBACK: 'manobal_feedback',
+  ONBOARDED: 'manobal_onboarded',
+  USE_DEMO_DATA: 'manobal_dev_demo_flag',
+};
+
+const LEGACY_STORAGE_KEYS = {
   HEALTH_SIGNALS: 'manobah_health_signals',
   HEALTH_7DAYS: 'manobah_health_7days',
   GAME_SESSIONS: 'manobah_game_sessions',
@@ -9,6 +19,19 @@ const STORAGE_KEYS = {
   ONBOARDED: 'manobah_onboarded',
   USE_DEMO_DATA: 'manobah_dev_demo_flag',
 };
+
+function getStorageItem(key: string, legacyKey?: string): string | null {
+  try {
+    const val = localStorage.getItem(key);
+    if (val !== null) return val;
+    if (legacyKey) {
+      return localStorage.getItem(legacyKey);
+    }
+  } catch {
+    // Storage access error
+  }
+  return null;
+}
 
 export const INITIAL_BASELINE: PersonalBaseline = {
   heartRate: 66,
@@ -74,7 +97,7 @@ export const DEMO_7DAY_DATA: HealthDayData[] = [
 
 export function loadHealthSignals(): HealthSignals {
   try {
-    const raw = localStorage.getItem(STORAGE_KEYS.HEALTH_SIGNALS);
+    const raw = getStorageItem(STORAGE_KEYS.HEALTH_SIGNALS, LEGACY_STORAGE_KEYS.HEALTH_SIGNALS);
     if (raw) return JSON.parse(raw);
   } catch (e) {
     console.warn('Storage read error:', e);
@@ -92,7 +115,7 @@ export function saveHealthSignals(signals: HealthSignals): void {
 
 export function load7DayData(): HealthDayData[] {
   try {
-    const raw = localStorage.getItem(STORAGE_KEYS.HEALTH_7DAYS);
+    const raw = getStorageItem(STORAGE_KEYS.HEALTH_7DAYS, LEGACY_STORAGE_KEYS.HEALTH_7DAYS);
     if (raw) return JSON.parse(raw);
   } catch (e) {
     console.warn('Storage read error:', e);
@@ -110,7 +133,7 @@ export function save7DayData(data: HealthDayData[]): void {
 
 export function loadGameSessions(): GameSession[] {
   try {
-    const raw = localStorage.getItem(STORAGE_KEYS.GAME_SESSIONS);
+    const raw = getStorageItem(STORAGE_KEYS.GAME_SESSIONS, LEGACY_STORAGE_KEYS.GAME_SESSIONS);
     if (raw) return JSON.parse(raw);
   } catch (e) {
     console.warn('Storage read error:', e);
@@ -130,7 +153,7 @@ export function saveGameSession(session: GameSession): void {
 
 export function loadCheckIns(): CheckInRecord[] {
   try {
-    const raw = localStorage.getItem(STORAGE_KEYS.CHECK_INS);
+    const raw = getStorageItem(STORAGE_KEYS.CHECK_INS, LEGACY_STORAGE_KEYS.CHECK_INS);
     if (raw) return JSON.parse(raw);
   } catch (e) {
     console.warn('Storage read error:', e);
@@ -150,7 +173,7 @@ export function saveCheckIn(record: CheckInRecord): void {
 
 export function loadFeedback(): ProductFeedback[] {
   try {
-    const raw = localStorage.getItem(STORAGE_KEYS.FEEDBACK);
+    const raw = getStorageItem(STORAGE_KEYS.FEEDBACK, LEGACY_STORAGE_KEYS.FEEDBACK);
     if (raw) return JSON.parse(raw);
   } catch (e) {
     console.warn('Storage read error:', e);
@@ -170,7 +193,7 @@ export function saveFeedback(fb: ProductFeedback): void {
 
 export function isOnboarded(): boolean {
   try {
-    return localStorage.getItem(STORAGE_KEYS.ONBOARDED) === 'true';
+    return getStorageItem(STORAGE_KEYS.ONBOARDED, LEGACY_STORAGE_KEYS.ONBOARDED) === 'true';
   } catch {
     return false;
   }
@@ -187,6 +210,7 @@ export function setOnboarded(val: boolean): void {
 export function clearAllLocalData(): void {
   try {
     Object.values(STORAGE_KEYS).forEach((k) => localStorage.removeItem(k));
+    Object.values(LEGACY_STORAGE_KEYS).forEach((k) => localStorage.removeItem(k));
   } catch (e) {
     console.warn(e);
   }

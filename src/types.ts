@@ -36,16 +36,21 @@ export interface HealthDayData {
 }
 
 export interface GameSession {
-  sessionId: string;
+  id?: string;
+  sessionId?: string;
   gameType: GameType;
-  startTime: number;
-  endTime: number;
+  startTime?: number;
+  endTime?: number;
+  timestamp?: number;
+  dateStr?: string;
   durationSeconds: number;
-  trialCount: number;
+  trialCount?: number;
+  totalTrials?: number;
   accuracy: number; // 0 to 100%
   reactionTime: number; // mean RT in ms
-  reactionTimeVariability: number; // SD in ms
-  errors: number;
+  reactionTimeVariability?: number; // SD in ms
+  rtVariability?: number;
+  errors?: number;
   completionStatus: 'completed' | 'abandoned';
   // Game-specific metrics
   goAccuracy?: number;

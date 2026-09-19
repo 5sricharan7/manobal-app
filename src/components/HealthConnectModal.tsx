@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { ShieldCheck, Heart, Activity, Moon, Zap, Check, AlertCircle, X, RefreshCw } from 'lucide-react';
 import { HealthSignals } from '../types';
+import { useTheme } from '../theme/ThemeContext';
 
 interface HealthConnectModalProps {
   isOpen: boolean;
@@ -19,6 +20,7 @@ export const HealthConnectModal: React.FC<HealthConnectModalProps> = ({
   onSync,
   isSyncing,
 }) => {
+  const { colors, isDark } = useTheme();
   const [permissions, setPermissions] = useState(healthSignals.permissionsGranted);
 
   if (!isOpen) return null;
@@ -57,14 +59,23 @@ export const HealthConnectModal: React.FC<HealthConnectModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-fadeIn">
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 backdrop-blur-sm animate-fadeIn"
+      style={{ backgroundColor: isDark ? 'rgba(0,0,0,0.8)' : 'rgba(15,23,42,0.45)' }}
+    >
       <div
         id="health-connect-permission-sheet"
-        className="w-full max-w-sm rounded-3xl bg-[#0B1E16] border border-[#1B4331] p-5 shadow-2xl relative text-[#F4F7F4] max-h-[90vh] overflow-y-auto"
+        className="w-full max-w-sm rounded-3xl border p-5 shadow-2xl relative max-h-[90vh] overflow-y-auto theme-fade-transition"
+        style={{
+          backgroundColor: colors.surface,
+          borderColor: colors.border,
+          color: colors.primaryText,
+        }}
       >
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 p-1.5 rounded-full text-[#8EA898] hover:text-[#F4F7F4] hover:bg-[#142F22] transition-colors"
+          className="absolute top-4 right-4 p-1.5 rounded-full transition-colors"
+          style={{ color: colors.secondaryText }}
           aria-label="Close Health Connect sheet"
         >
           <X className="w-4 h-4" />
@@ -72,34 +83,53 @@ export const HealthConnectModal: React.FC<HealthConnectModalProps> = ({
 
         {/* Header */}
         <div className="flex items-center gap-3 mb-3">
-          <div className="w-10 h-10 rounded-2xl bg-[#113123] border border-[#21533C] flex items-center justify-center text-[#2FE4A6]">
+          <div
+            className="w-10 h-10 rounded-2xl border flex items-center justify-center"
+            style={{
+              backgroundColor: colors.accentSoft,
+              borderColor: colors.accent,
+              color: colors.accentText,
+            }}
+          >
             <ShieldCheck className="w-5 h-5" />
           </div>
           <div>
-            <span className="text-[10px] uppercase font-semibold tracking-wider text-[#2FE4A6]">
+            <span
+              className="text-[10px] uppercase font-semibold tracking-wider block"
+              style={{ color: colors.accentText }}
+            >
               Android Health Connect
             </span>
-            <h3 className="text-base font-semibold text-[#F4F7F4]">Permission Access</h3>
+            <h3 className="text-base font-semibold" style={{ color: colors.primaryText }}>
+              Permission Access
+            </h3>
           </div>
         </div>
 
-        <p className="text-xs text-[#8EA898] leading-relaxed mb-4">
-          Manobah reads physiological signals locally to observe your personal baselines. Data remains strictly on your device and is not transmitted to external cloud servers.
+        <p className="text-xs leading-relaxed mb-4" style={{ color: colors.secondaryText }}>
+          Manobal reads physiological signals locally to observe your personal baselines. Data remains strictly on your device and is not transmitted to external cloud servers.
         </p>
 
         {/* System Status Pill */}
-        <div className="p-3 rounded-2xl bg-[#06140D] border border-[#153424] mb-4 flex items-center justify-between">
+        <div
+          className="p-3 rounded-2xl border mb-4 flex items-center justify-between"
+          style={{
+            backgroundColor: colors.surfaceSunken,
+            borderColor: colors.borderSubtle,
+          }}
+        >
           <div className="flex items-center gap-2">
             <span
-              className={`w-2.5 h-2.5 rounded-full ${
-                healthSignals.isConnected ? 'bg-[#2FE4A6] shadow-[0_0_8px_#2FE4A6]' : 'bg-[#597564]'
-              }`}
+              className="w-2 h-2 rounded-full"
+              style={{
+                backgroundColor: healthSignals.isConnected ? colors.accent : colors.mutedText,
+              }}
             />
             <div>
-              <p className="text-xs font-medium text-[#E4EDE7]">
-                {healthSignals.isConnected ? 'Connected & Active' : 'Disconnected / Empty Data'}
+              <p className="text-xs font-medium" style={{ color: colors.primaryText }}>
+                {healthSignals.isConnected ? 'Connected & Active' : 'Disconnected / No Permissions'}
               </p>
-              <p className="text-[10px] text-[#8EA898]">
+              <p className="text-[10px] font-mono" style={{ color: colors.tertiaryText }}>
                 {healthSignals.lastSyncTimestamp
                   ? `Last sync: ${new Date(healthSignals.lastSyncTimestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`
                   : 'No sync history'}
@@ -111,38 +141,55 @@ export const HealthConnectModal: React.FC<HealthConnectModalProps> = ({
             <button
               onClick={onSync}
               disabled={isSyncing}
-              className="p-1.5 rounded-lg bg-[#112F21] hover:bg-[#18402D] text-[#2FE4A6] transition-colors"
+              className="p-1.5 rounded-lg transition-colors border"
+              style={{
+                backgroundColor: colors.accentSoft,
+                borderColor: colors.accent,
+                color: colors.accentText,
+              }}
               title="Sync now"
             >
-              <RefreshCw className={`w-4 h-4 ${isSyncing ? 'animate-spin' : ''}`} />
+              <RefreshCw className={`w-3.5 h-3.5 ${isSyncing ? 'animate-spin' : ''}`} />
             </button>
           )}
         </div>
 
         {/* Permission Item Toggles */}
         <div className="space-y-2 mb-4">
-          <label className="text-[11px] font-semibold text-[#A8C4B3] uppercase tracking-wider block">
+          <label
+            className="text-[10px] font-semibold uppercase tracking-wider block"
+            style={{ color: colors.tertiaryText }}
+          >
             Requested Data Permissions
           </label>
 
           {/* Heart Rate */}
           <div
             onClick={() => togglePermission('heartRate')}
-            className="flex items-center justify-between p-3 rounded-xl bg-[#0F261C] hover:bg-[#133023] border border-[#1C4633] cursor-pointer transition-colors"
+            className="flex items-center justify-between p-3 rounded-2xl border cursor-pointer transition-colors"
+            style={{
+              backgroundColor: colors.surfaceSunken,
+              borderColor: colors.borderSubtle,
+            }}
           >
             <div className="flex items-center gap-2.5">
-              <Heart className="w-4 h-4 text-[#2FE4A6]" />
+              <Heart className="w-4 h-4" style={{ color: colors.accentText }} />
               <div>
-                <p className="text-xs font-medium text-[#F4F7F4]">Heart Rate & Resting HR</p>
-                <p className="text-[10px] text-[#8EA898]">Reads sample heart rate records</p>
+                <p className="text-xs font-medium" style={{ color: colors.primaryText }}>
+                  Heart Rate & Resting HR
+                </p>
+                <p className="text-[10px]" style={{ color: colors.secondaryText }}>
+                  Reads sample heart rate records
+                </p>
               </div>
             </div>
             <div
-              className={`w-5 h-5 rounded-md flex items-center justify-center border transition-colors ${
-                permissions.heartRate
-                  ? 'bg-[#2FE4A6] border-[#2FE4A6] text-[#06110C]'
-                  : 'border-[#26533D] bg-transparent'
-              }`}
+              className="w-5 h-5 rounded-md flex items-center justify-center border transition-colors"
+              style={{
+                backgroundColor: permissions.heartRate ? colors.accent : 'transparent',
+                borderColor: permissions.heartRate ? colors.accent : colors.border,
+                color: colors.accentContrast,
+              }}
             >
               {permissions.heartRate && <Check className="w-3.5 h-3.5 stroke-[3]" />}
             </div>
@@ -151,21 +198,30 @@ export const HealthConnectModal: React.FC<HealthConnectModalProps> = ({
           {/* HRV */}
           <div
             onClick={() => togglePermission('hrv')}
-            className="flex items-center justify-between p-3 rounded-xl bg-[#0F261C] hover:bg-[#133023] border border-[#1C4633] cursor-pointer transition-colors"
+            className="flex items-center justify-between p-3 rounded-2xl border cursor-pointer transition-colors"
+            style={{
+              backgroundColor: colors.surfaceSunken,
+              borderColor: colors.borderSubtle,
+            }}
           >
             <div className="flex items-center gap-2.5">
-              <Zap className="w-4 h-4 text-[#2FE4A6]" />
+              <Zap className="w-4 h-4 text-[#F59E0B]" />
               <div>
-                <p className="text-xs font-medium text-[#F4F7F4]">Heart-Rate Variability (HRV)</p>
-                <p className="text-[10px] text-[#8EA898]">RMSSD autonomic nervous system index</p>
+                <p className="text-xs font-medium" style={{ color: colors.primaryText }}>
+                  Heart-Rate Variability (HRV)
+                </p>
+                <p className="text-[10px]" style={{ color: colors.secondaryText }}>
+                  RMSSD autonomic nervous system index
+                </p>
               </div>
             </div>
             <div
-              className={`w-5 h-5 rounded-md flex items-center justify-center border transition-colors ${
-                permissions.hrv
-                  ? 'bg-[#2FE4A6] border-[#2FE4A6] text-[#06110C]'
-                  : 'border-[#26533D] bg-transparent'
-              }`}
+              className="w-5 h-5 rounded-md flex items-center justify-center border transition-colors"
+              style={{
+                backgroundColor: permissions.hrv ? colors.accent : 'transparent',
+                borderColor: permissions.hrv ? colors.accent : colors.border,
+                color: colors.accentContrast,
+              }}
             >
               {permissions.hrv && <Check className="w-3.5 h-3.5 stroke-[3]" />}
             </div>
@@ -174,21 +230,30 @@ export const HealthConnectModal: React.FC<HealthConnectModalProps> = ({
           {/* Sleep */}
           <div
             onClick={() => togglePermission('sleep')}
-            className="flex items-center justify-between p-3 rounded-xl bg-[#0F261C] hover:bg-[#133023] border border-[#1C4633] cursor-pointer transition-colors"
+            className="flex items-center justify-between p-3 rounded-2xl border cursor-pointer transition-colors"
+            style={{
+              backgroundColor: colors.surfaceSunken,
+              borderColor: colors.borderSubtle,
+            }}
           >
             <div className="flex items-center gap-2.5">
-              <Moon className="w-4 h-4 text-[#2FE4A6]" />
+              <Moon className="w-4 h-4 text-[#60A5FA]" />
               <div>
-                <p className="text-xs font-medium text-[#F4F7F4]">Sleep Sessions & Stages</p>
-                <p className="text-[10px] text-[#8EA898]">Night duration and sleep regularity</p>
+                <p className="text-xs font-medium" style={{ color: colors.primaryText }}>
+                  Sleep Sessions & Stages
+                </p>
+                <p className="text-[10px]" style={{ color: colors.secondaryText }}>
+                  Night duration and sleep regularity
+                </p>
               </div>
             </div>
             <div
-              className={`w-5 h-5 rounded-md flex items-center justify-center border transition-colors ${
-                permissions.sleep
-                  ? 'bg-[#2FE4A6] border-[#2FE4A6] text-[#06110C]'
-                  : 'border-[#26533D] bg-transparent'
-              }`}
+              className="w-5 h-5 rounded-md flex items-center justify-center border transition-colors"
+              style={{
+                backgroundColor: permissions.sleep ? colors.accent : 'transparent',
+                borderColor: permissions.sleep ? colors.accent : colors.border,
+                color: colors.accentContrast,
+              }}
             >
               {permissions.sleep && <Check className="w-3.5 h-3.5 stroke-[3]" />}
             </div>
@@ -197,21 +262,30 @@ export const HealthConnectModal: React.FC<HealthConnectModalProps> = ({
           {/* Steps / Activity */}
           <div
             onClick={() => togglePermission('steps')}
-            className="flex items-center justify-between p-3 rounded-xl bg-[#0F261C] hover:bg-[#133023] border border-[#1C4633] cursor-pointer transition-colors"
+            className="flex items-center justify-between p-3 rounded-2xl border cursor-pointer transition-colors"
+            style={{
+              backgroundColor: colors.surfaceSunken,
+              borderColor: colors.borderSubtle,
+            }}
           >
             <div className="flex items-center gap-2.5">
-              <Activity className="w-4 h-4 text-[#2FE4A6]" />
+              <Activity className="w-4 h-4" style={{ color: colors.accentText }} />
               <div>
-                <p className="text-xs font-medium text-[#F4F7F4]">Daily Steps & Activity</p>
-                <p className="text-[10px] text-[#8EA898]">Aggregated step counts & cadence</p>
+                <p className="text-xs font-medium" style={{ color: colors.primaryText }}>
+                  Daily Steps & Activity
+                </p>
+                <p className="text-[10px]" style={{ color: colors.secondaryText }}>
+                  Aggregated step counts & cadence
+                </p>
               </div>
             </div>
             <div
-              className={`w-5 h-5 rounded-md flex items-center justify-center border transition-colors ${
-                permissions.steps
-                  ? 'bg-[#2FE4A6] border-[#2FE4A6] text-[#06110C]'
-                  : 'border-[#26533D] bg-transparent'
-              }`}
+              className="w-5 h-5 rounded-md flex items-center justify-center border transition-colors"
+              style={{
+                backgroundColor: permissions.steps ? colors.accent : 'transparent',
+                borderColor: permissions.steps ? colors.accent : colors.border,
+                color: colors.accentContrast,
+              }}
             >
               {permissions.steps && <Check className="w-3.5 h-3.5 stroke-[3]" />}
             </div>
@@ -219,8 +293,15 @@ export const HealthConnectModal: React.FC<HealthConnectModalProps> = ({
         </div>
 
         {/* Privacy badge */}
-        <div className="p-2.5 rounded-xl bg-[#071710] border border-[#163826] text-[11px] text-[#8EA898] flex items-start gap-2 mb-4">
-          <AlertCircle className="w-3.5 h-3.5 text-[#2FE4A6] shrink-0 mt-0.5" />
+        <div
+          className="p-2.5 rounded-xl border text-[10px] flex items-start gap-2 mb-4"
+          style={{
+            backgroundColor: colors.surfaceSunken,
+            borderColor: colors.borderSubtle,
+            color: colors.secondaryText,
+          }}
+        >
+          <AlertCircle className="w-3.5 h-3.5 shrink-0 mt-0.5" style={{ color: colors.accentText }} />
           <span>
             Protected by design. You can modify or revoke these permissions at any time via Android system settings.
           </span>
@@ -230,7 +311,11 @@ export const HealthConnectModal: React.FC<HealthConnectModalProps> = ({
         <div className="space-y-2">
           <button
             onClick={handleGrantAll}
-            className="w-full py-2.5 rounded-xl bg-[#2FE4A6] text-[#06110C] font-semibold text-xs hover:bg-[#4EF2BB] transition-colors"
+            className="w-full py-3 rounded-2xl font-bold text-xs transition-all shadow-sm active:scale-[0.98]"
+            style={{
+              backgroundColor: colors.accent,
+              color: colors.accentContrast,
+            }}
           >
             Grant All Requested Permissions
           </button>
@@ -239,14 +324,24 @@ export const HealthConnectModal: React.FC<HealthConnectModalProps> = ({
             {healthSignals.isConnected && (
               <button
                 onClick={handleDisconnect}
-                className="flex-1 py-2.5 rounded-xl border border-[#381B1B] text-xs font-medium text-[#F28B82] hover:bg-[#210D0D] transition-colors"
+                className="flex-1 py-2.5 rounded-xl border text-xs font-medium transition-colors"
+                style={{
+                  backgroundColor: colors.surfaceSunken,
+                  borderColor: colors.error,
+                  color: colors.error,
+                }}
               >
                 Disconnect / Clear
               </button>
             )}
             <button
               onClick={handleApplyChanges}
-              className="flex-1 py-2.5 rounded-xl border border-[#1D4A35] text-xs font-medium text-[#D0E2D5] hover:bg-[#133224] transition-colors"
+              className="flex-1 py-2.5 rounded-xl border text-xs font-medium transition-colors"
+              style={{
+                backgroundColor: colors.surfaceSunken,
+                borderColor: colors.border,
+                color: colors.primaryText,
+              }}
             >
               Apply Selection
             </button>
